@@ -77,7 +77,7 @@ const fetchHistory = asyncHandler(async (req,res)=>{
 })
 
 const getSummury = asyncHandler(async (req,res)=>{
-    const pythonUrl = process.env.PYTHON_URL;
+
     try {
         const { pdfUrl } = req.body;
 

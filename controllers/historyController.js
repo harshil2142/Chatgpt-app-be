@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const bcrypt = require("bcryptjs");
+const axios = require("axios");
 const generateToken = require("../config/generateToken");
 const { paginatedArray } = require("../helper/pagination");
 const History = require("../models/historyModel");
@@ -76,9 +77,24 @@ const fetchHistory = asyncHandler(async (req,res)=>{
 })
 
 const getSummury = asyncHandler(async (req,res)=>{
+    const pythonUrl = process.env.PYTHON_URL;
     try {
         const { pdfUrl } = req.body;
-        sendSuccessResponse(res , { summury : "this is a static summury"})
+
+        if(pdfUrl) {
+            try {
+                
+            const resp  = await axios.post(`http://54.86.205.64:5002/summarize`,{
+                s3_url : pdfUrl
+            })
+            if(resp?.data){
+                sendSuccessResponse(res , { summury : resp?.data?.summary})
+            }
+            } catch (error) {
+                sendErrorResponse(res, error.message )
+            }
+        }
+
         
     } catch (error) {
         sendErrorResponse(res, error.message )

@@ -28,6 +28,7 @@ const createHistory = asyncHandler(async (req, res) => {
                         {
                             prompt,
                             response: resp?.data?.response,
+                            pdfName : resp?.data?.pdf_name,
                         }
                     ]
                 })
@@ -59,18 +60,19 @@ const updateHistory = asyncHandler(async (req, res) => {
 
         const history = await History.findById(historyId)
 
+        if (!history) {
+            sendErrorResponse(res, "History not found", 404)
+        }
         try {
+
             const resp = await axios.post(`http://54.86.205.64:5003/response`, {
                 s3_url: history?.pdfUrl,
                 query: prompt,
                 chat_history: chatHistory?.map((i) => ({ Human: i?.prompt, Chatbot: i?.response }))
             })
 
-            if (!history) {
-                sendErrorResponse(res, "History not found", 404)
-            }
-            history.history.push({ prompt, response: resp?.data?.response });
-
+           
+            history.history.push({ prompt, response: resp?.data?.response , pdfName : resp?.data?.pdf_name });
             await history.save();
 
             sendSuccessResponse(res, {

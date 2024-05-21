@@ -22,6 +22,9 @@ const historySchema = new mongoose.Schema({
         response: {
             type: String,
             required: true
+        },
+        pdfName:{
+            type : String
         }
     }]
 },
